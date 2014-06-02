@@ -31,7 +31,7 @@ module.exports = function(timeout) {
   function doDDNS() {
     getip()
       .then(function(ip) {
-        if (isValidIP(ip) && current_ip != ip) {
+        if (isValidIP(ip)) {
           if (current_ip == ip) {
             console.log('ip: [%s], not change!', ip);
           } else {

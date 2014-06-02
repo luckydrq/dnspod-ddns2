@@ -32,8 +32,12 @@ module.exports = function(timeout) {
     getip()
       .then(function(ip) {
         if (isValidIP(ip) && current_ip != ip) {
-          // current_ip = ip;
-          return ddns.updateARecord(ip);
+          if (current_ip == ip) {
+            console.log('ip: [%s], not change!', ip);
+          } else {
+            current_ip = ip;
+            return ddns.updateARecord(ip);
+          }
         } else {
           throw new Error('Invalid IP!');
         }

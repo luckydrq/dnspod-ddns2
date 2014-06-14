@@ -17,6 +17,9 @@ function getip() {
   client.on('end', function() {
     d.resolve(ip);
   });
+  client.on('error', function(err) {
+    d.reject(err);
+  });
 
   return d.promise;
 }

@@ -63,13 +63,17 @@ module.exports = function(timeout) {
 
 function now(){
   var now = new Date();
-  var year = now.getFullYear();
-  var month = now.getMonth() + 1;
-  var day = now.getDate();
-  var hour = now.getHours();
-  var minute = now.getMinutes();
-  var second = now.getSeconds();
+  var year = normalize(now.getFullYear());
+  var month = normalize(now.getMonth() + 1);
+  var day = normalize(now.getDate());
+  var hour = normalize(now.getHours());
+  var minute = normalize(now.getMinutes());
+  var second = normalize(now.getSeconds());
   
   return [[year, month, day].join('-'), [hour, minute, second].join(':')].join(' ');
 }
 
+function normalize(num) {
+  if (num < 10) return '0' + num;
+  else return num;
+}

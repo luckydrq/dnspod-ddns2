@@ -33,7 +33,7 @@ module.exports = function(timeout) {
       .then(function(ip) {
         if (isValidIP(ip)) {
           if (current_ip == ip) {
-            console.log('ip: [%s], not change!', ip);
+            console.log('%s ip: [%s], not change!', now(), ip);
           } else {
             current_ip = ip;
             return ddns.updateARecord(ip);
@@ -44,11 +44,11 @@ module.exports = function(timeout) {
       })
       .then(function(record) {
         if (record) {
-          console.log(record.value);
+          console.log('%s %s', now(), record.value);
         }
       })
       .fail(function(err) {
-        console.error(err.message);
+        console.error('%s %s', now(), err.message);
       })
       .fin(function(){
         setTimeout(doDDNS, timeout);
@@ -57,4 +57,16 @@ module.exports = function(timeout) {
 
   doDDNS();
 };
+
+function now(){
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = now.getMonth() + 1;
+  var day = now.getDate();
+  var hour = now.getHours();
+  var minute = now.getMinutes();
+  var second = now.getSeconds();
+  
+  return [[year, month, day].join('-'), [hour, minute, second].join(':')].join(' ');
+}
 

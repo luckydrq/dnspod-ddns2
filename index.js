@@ -18,6 +18,8 @@ function getip() {
     d.resolve(ip);
   });
   client.on('error', function(err) {
+    // destroy socket
+    client.destroy();
     d.reject(err);
   });
 

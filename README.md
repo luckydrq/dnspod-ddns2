@@ -21,7 +21,7 @@ Your login password of your account.
 
 ####--domain_name
 
-Your domain name. If not explicitly specified, it will default to the first domain of your domain list returned. *However, it it recommended to be specified.*
+Your domain name. If not explicitly specified, it will default to the first domain of your domain list returned. *However, it is recommended to be specified.*
 
 ####--timeout
 

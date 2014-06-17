@@ -4,6 +4,11 @@
 [c]npm install dnspod-ddns2 -g
 ddns --login_email=[your_login_email_of_dnspod] --login_password=[your_login_password_of_dnspod]
 ```
+Sometimes you may want to run in daemon, just do as below:
+
+```bash
+nohup ddns ... >/dev/null 2>&1 &
+```
 
 ###Scope
 

@@ -1,15 +1,37 @@
+var dns = require('dns');
 var net = require('net');
 var Q = require('q');
-var current_ip;
+var current_ip, host_ip;
+var DNSPOD_DOMAIN = 'ns1.dnspod.net';
+
+function gethost() {
+  if (host_ip) return;
+
+  var d = Q.defer();
+
+  dns.lookup(DNSPOD_DOMAIN, function(err, host) {
+    if (err) d.reject(err);
+    else {
+      if (isValidIP(host)) {
+        host_ip = host;
+        d.resolve();
+      } else {
+        d.reject(new Error('Invalid host!'));
+      }
+    }
+  });
+
+  return d.promise;
+}
 
 function getip() {
   var d = Q.defer();
   var ip = '';
   var client = net.connect({
     port: 6666,
-    host: 'ns1.dnspod.net'
+    host: host_ip
   });
-  
+
   client.setEncoding('utf8');
   client.on('data', function(chunk) {
     ip += chunk;
@@ -40,7 +62,13 @@ module.exports = function(timeout) {
   var ddns = require('./lib/ddns');
 
   function doDDNS() {
-    getip()
+    return Q
+      .fcall(function() {
+        return gethost();
+      })
+      .then(function() {
+        return getip();
+      })
       .then(function(ip) {
         if (isValidIP(ip)) {
           if (current_ip == ip) {
@@ -59,6 +87,7 @@ module.exports = function(timeout) {
         }
       })
       .fail(function(err) {
+        host_ip = undefined;
         console.error('%s %s', now(), err.message);
       })
       .fin(function(){
@@ -77,7 +106,7 @@ function now(){
   var hour = normalize(now.getHours());
   var minute = normalize(now.getMinutes());
   var second = normalize(now.getSeconds());
-  
+
   return [[year, month, day].join('-'), [hour, minute, second].join(':')].join(' ');
 }
 

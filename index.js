@@ -19,8 +19,14 @@ function getip() {
   });
   client.on('error', function(err) {
     // destroy socket
-    client.destroy();
+    client && client.destroy();
     d.reject(err);
+  });
+  // got `ETIMEDOUT`
+  // add listener to `timeout`
+  client.on('timeout', function(err) {
+    client && client.destroy();
+    d.reject(new Error('connect timeout!'));
   });
 
   return d.promise;

@@ -60,6 +60,7 @@ function isValidIP(ip) {
 
 module.exports = function(timeout) {
   var ddns = require('./lib/ddns');
+  var internal = 0;
 
   function doDDNS() {
     return Q
@@ -91,6 +92,10 @@ module.exports = function(timeout) {
         console.error('%s %s', now(), err.message);
       })
       .fin(function(){
+        if (++internal == 50) {
+          host_ip = undefined;
+          internal = 0;
+        }
         setTimeout(doDDNS, timeout);
       });
   }
@@ -99,13 +104,13 @@ module.exports = function(timeout) {
 };
 
 function now(){
-  var now = new Date();
-  var year = normalize(now.getFullYear());
-  var month = normalize(now.getMonth() + 1);
-  var day = normalize(now.getDate());
-  var hour = normalize(now.getHours());
-  var minute = normalize(now.getMinutes());
-  var second = normalize(now.getSeconds());
+  var nowDate = new Date();
+  var year = normalize(nowDate.getFullYear());
+  var month = normalize(nowDate.getMonth() + 1);
+  var day = normalize(nowDate.getDate());
+  var hour = normalize(nowDate.getHours());
+  var minute = normalize(nowDate.getMinutes());
+  var second = normalize(nowDate.getSeconds());
 
   return [[year, month, day].join('-'), [hour, minute, second].join(':')].join(' ');
 }

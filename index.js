@@ -75,16 +75,19 @@ module.exports = function(timeout) {
           if (current_ip == ip) {
             console.log('%s ip: [%s], not change!', now(), ip);
           } else {
-            current_ip = ip;
-            return ddns.updateARecord(ip);
+            return ddns
+              .updateARecord(ip)
+              .then(function(record) {
+                if (record && isValidIP(record.value)) {
+                  current_ip = ip;
+                  console.log('%s %s', now(), record.value);
+                } else {
+                  throw new Error('updateARecord failed!');
+                }
+              });
           }
         } else {
           throw new Error('Invalid IP!');
-        }
-      })
-      .then(function(record) {
-        if (record) {
-          console.log('%s %s', now(), record.value);
         }
       })
       .fail(function(err) {

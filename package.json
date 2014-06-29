@@ -1,7 +1,7 @@
 {
   "name": "dnspod-ddns2",
   "author": "luckydrq<drqzju@gmail.com>",
-  "version": "0.1.11",
+  "version": "0.1.11-alpha",
   "keywords": [
     "dnspod",
     "ddns",

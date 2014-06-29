@@ -36,4 +36,8 @@ global.domain_name = argv.domain_name;
 var timeout = parseInt(argv.timeout, 10);
 global.timeout = !isNaN(timeout) ? timeout * 1000 : 30000;
 
+process.on('uncaughtException', function(e) {
+  console.error(e.stack);
+});
+
 require('..')(global.timeout);

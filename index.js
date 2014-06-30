@@ -4,13 +4,19 @@ var Q = require('q');
 var current_ip, host_ip;
 var DNSPOD_DOMAIN = 'ns1.dnspod.net';
 
+// set global `onerror`
+Q.longStackSupport = true;
+Q.onerror = function(e) {
+  console.error(e.stack);
+};
+
 function gethost() {
   if (host_ip) return;
 
   var d = Q.defer();
 
-  dns.lookup(DNSPOD_DOMAIN, function(err, host) {
-    if (err) d.reject(err);
+  dns.lookup(DNSPOD_DOMAIN, function(e, host) {
+    if (e) d.reject(e);
     else {
       if (isValidIP(host)) {
         host_ip = host;
@@ -39,14 +45,14 @@ function getip() {
   client.on('end', function() {
     d.resolve(ip);
   });
-  client.on('error', function(err) {
+  client.on('error', function(e) {
     // destroy socket
     client && client.destroy();
-    d.reject(err);
+    d.reject(e);
   });
   // got `ETIMEDOUT`
   // add listener to `timeout`
-  client.on('timeout', function(err) {
+  client.on('timeout', function(e) {
     client && client.destroy();
     d.reject(new Error('connect timeout!'));
   });
@@ -64,7 +70,7 @@ module.exports = function(timeout) {
 
   function doDDNS() {
     return Q
-      .fcall(function() {
+      .try(function() {
         return gethost();
       })
       .then(function() {
@@ -90,17 +96,18 @@ module.exports = function(timeout) {
           throw new Error('Invalid IP!');
         }
       })
-      .fail(function(err) {
+      .catch(function(e) {
         host_ip = undefined;
-        console.error('%s %s', now(), err.message);
+        console.error('%s %s', now(), e.message);
       })
-      .fin(function(){
+      .finally(function(){
         if (++internal == 50) {
           host_ip = undefined;
           internal = 0;
         }
         setTimeout(doDDNS, timeout);
-      });
+      })
+      .done();
   }
 
   doDDNS();

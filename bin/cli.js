@@ -14,7 +14,7 @@ if (argv.h || argv.help) {
   console.log(' --domain_name=[your domain name]');
   console.log(' --login_email=[your login_email of dnspod]');
   console.log(' --login_password=[your login_email of dnspod]');
-  console.log(' --timeout=[frequecy to invoke ddns, default to 30s];')
+  console.log(' --timeout=[frequecy to invoke ddns, default to 30s];');
   process.exit(0);
 }
 
@@ -35,9 +35,5 @@ global.domain_name = argv.domain_name;
 
 var timeout = parseInt(argv.timeout, 10);
 global.timeout = !isNaN(timeout) ? timeout * 1000 : 30000;
-
-process.on('uncaughtException', function(e) {
-  console.error(e.stack);
-});
 
 require('..')(global.timeout);

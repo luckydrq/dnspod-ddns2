@@ -52,7 +52,7 @@ function getip() {
   });
   // got `ETIMEDOUT`
   // add listener to `timeout`
-  client.on('timeout', function(e) {
+  client.setTimeout(5000, function(e) {
     client && client.destroy();
     d.reject(new Error('connect timeout!'));
   });
